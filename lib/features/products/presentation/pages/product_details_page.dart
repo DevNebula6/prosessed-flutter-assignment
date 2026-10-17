@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../cart/presentation/pages/cart_page.dart';
+import '../../../cart/presentation/widgets/cart_icon.dart';
 import '../../domain/entities/product.dart';
 import '../widgets/product_details.dart';
 
@@ -19,7 +21,15 @@ class ProductDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            tooltip: 'Cart',
+            icon: const CartIcon(),
+            onPressed: () => Navigator.of(context).push(CartPage.route()),
+          ),
+        ],
+      ),
       body: ProductDetails(productId: productId, preview: preview),
     );
   }
