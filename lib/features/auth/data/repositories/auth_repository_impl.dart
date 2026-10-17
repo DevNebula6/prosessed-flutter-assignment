@@ -42,9 +42,15 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<User?> getSavedUser() async {
-    final token = await _tokenStorage.readAccessToken();
-    if (token == null) return null;
-    return _local.getUser()?.toEntity();
+    try {
+      final token = await _tokenStorage.readAccessToken();
+      if (token == null) return null;
+      return _local.getUser()?.toEntity();
+    } catch (_) {
+      // Secure storage can become unreadable, e.g. after a backup restore.
+      // Asking the user to sign in again beats hanging on the splash screen.
+      return null;
+    }
   }
 
   @override
