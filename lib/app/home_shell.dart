@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/utils/breakpoints.dart';
+import '../features/products/presentation/pages/products_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 
 /// Top-level tabs: a bottom bar on phones, a navigation rail on wider screens.
@@ -38,10 +39,7 @@ class _HomeShellState extends State<HomeShell> {
     // IndexedStack keeps each tab's state, like scroll position, when switching.
     final body = IndexedStack(
       index: _index,
-      children: const [
-        Center(child: Text('Products are coming next.')),
-        ProfilePage(),
-      ],
+      children: const [ProductsPage(), ProfilePage()],
     );
 
     if (ScreenSize.of(context) == ScreenSize.compact) {
