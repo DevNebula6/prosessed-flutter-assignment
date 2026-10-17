@@ -1,7 +1,7 @@
-name: flutter_assesment_prosessed
-description: "A new Flutter project."
+name: shopsphere
+description: "ShopSphere - a product catalogue and shopping app built on the DummyJSON API."
 publish_to: 'none'
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
   sdk: ^3.13.4
