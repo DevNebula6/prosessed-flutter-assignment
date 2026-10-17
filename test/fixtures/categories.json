@@ -1,0 +1,17 @@
+[
+  {
+    "slug": "beauty",
+    "name": "Beauty",
+    "url": "https://dummyjson.com/products/category/beauty"
+  },
+  {
+    "slug": "groceries",
+    "name": "Groceries",
+    "url": "https://dummyjson.com/products/category/groceries"
+  },
+  {
+    "slug": "smartphones",
+    "name": "Smartphones",
+    "url": "https://dummyjson.com/products/category/smartphones"
+  }
+]
