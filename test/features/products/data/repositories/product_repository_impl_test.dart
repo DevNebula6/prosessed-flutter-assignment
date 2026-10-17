@@ -5,8 +5,10 @@ import 'package:shopsphere/core/error/failures.dart';
 import 'package:shopsphere/core/error/result.dart';
 import 'package:shopsphere/features/products/data/datasources/product_remote_data_source.dart';
 import 'package:shopsphere/features/products/data/models/product_category_model.dart';
+import 'package:shopsphere/features/products/data/models/product_model.dart';
 import 'package:shopsphere/features/products/data/models/products_page_model.dart';
 import 'package:shopsphere/features/products/data/repositories/product_repository_impl.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/product_category.dart';
 import 'package:shopsphere/features/products/domain/entities/product_sort.dart';
 import 'package:shopsphere/features/products/domain/entities/products_page.dart';
@@ -22,6 +24,9 @@ void main() {
 
   final pageModel = ProductsPageModel.fromJson(
     fixture('products_page.json') as Map<String, dynamic>,
+  );
+  final productModel = ProductModel.fromJson(
+    fixture('product.json') as Map<String, dynamic>,
   );
 
   setUpAll(() => registerFallbackValue(ProductSort.relevance));
@@ -118,6 +123,25 @@ void main() {
       final result = await repository.getCategories();
 
       expect(result, const Err<List<ProductCategory>>(TimeoutFailure()));
+    });
+  });
+
+  group('getProduct', () {
+    test('returns the product', () async {
+      when(() => remote.getProduct(1)).thenAnswer((_) async => productModel);
+
+      final result = await repository.getProduct(1);
+
+      expect(result, Ok<Product>(productModel.toEntity()));
+    });
+
+    test('returns NotFoundFailure for an unknown id', () async {
+      when(() => remote.getProduct(9999))
+          .thenThrow(dioError(DioExceptionType.badResponse, 404));
+
+      final result = await repository.getProduct(9999);
+
+      expect(result, const Err<Product>(NotFoundFailure()));
     });
   });
 }
