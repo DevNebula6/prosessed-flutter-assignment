@@ -7,8 +7,13 @@ environment:
   sdk: ^3.13.4
 
 dependencies:
+  cached_network_image: ^4.0.4
+  dio: ^5.11.1
+  equatable: ^3.0.0
   flutter:
     sdk: flutter
+  get_it: ^9.3.0
+  shimmer: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +22,14 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope-Bold.ttf
+          weight: 700
