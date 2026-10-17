@@ -6,6 +6,7 @@ import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../bloc/products_bloc.dart';
 import 'product_card.dart';
+import 'product_card_skeleton.dart';
 
 /// Two columns on phones, three or four on tablets.
 const productGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
@@ -24,22 +25,29 @@ class ProductGrid extends StatelessWidget {
     return BlocBuilder<ProductsBloc, ProductsState>(
       builder: (context, state) {
         if (state.products.isEmpty) {
-          return SliverFillRemaining(
-            hasScrollBody: false,
-            child: switch (state.status) {
-              ProductsStatus.failure => ErrorView(
+          return switch (state.status) {
+            ProductsStatus.failure => SliverFillRemaining(
+              hasScrollBody: false,
+              child: ErrorView(
                 failure: state.failure!,
                 onRetry: () {
                   context.read<ProductsBloc>().add(const ProductsRequested());
                 },
               ),
-              ProductsStatus.empty => const EmptyView(
-                icon: Icons.inventory_2_outlined,
-                title: 'No products found',
+            ),
+            ProductsStatus.empty => SliverFillRemaining(
+              hasScrollBody: false,
+              child: _NoResults(query: state.query),
+            ),
+            _ => SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              sliver: SliverGrid.builder(
+                gridDelegate: productGridDelegate,
+                itemCount: 8,
+                itemBuilder: (_, _) => const ProductCardSkeleton(),
               ),
-              _ => const Center(child: CircularProgressIndicator()),
-            },
-          );
+            ),
+          };
         }
 
         return SliverMainAxisGroup(
@@ -58,6 +66,31 @@ class ProductGrid extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _NoResults extends StatelessWidget {
+  const _NoResults({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    if (query.isEmpty) {
+      return const EmptyView(
+        icon: Icons.inventory_2_outlined,
+        title: 'Nothing here yet',
+        message: 'Try another category.',
+      );
+    }
+
+    return EmptyView(
+      icon: Icons.search_off_rounded,
+      title: 'No results for "$query"',
+      message: 'Check the spelling or try a different search.',
+      actionLabel: 'Clear search',
+      onAction: () => context.read<ProductsBloc>().add(const SearchChanged('')),
     );
   }
 }

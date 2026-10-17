@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/shimmer_box.dart';
 import '../bloc/products_bloc.dart';
 import '../cubit/categories_cubit.dart';
 
@@ -14,7 +15,10 @@ class CategoryChips extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
 
     final chips = switch (categoriesState) {
-      CategoriesLoading() => const <Widget>[],
+      CategoriesLoading() => [
+        for (final width in const [48.0, 88.0, 72.0, 104.0, 64.0])
+          AppShimmer(child: ShimmerBox(width: width, height: 32, radius: 16)),
+      ],
       CategoriesError() => [
         ActionChip(
           avatar: const Icon(Icons.refresh_rounded),
