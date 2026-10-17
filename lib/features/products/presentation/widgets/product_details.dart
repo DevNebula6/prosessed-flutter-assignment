@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injection.dart';
-import '../../../../core/error/failures.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/shimmer_box.dart';
 import '../../domain/entities/product.dart';
@@ -40,9 +40,12 @@ class ProductDetails extends StatelessWidget {
           ProductDetailsLoading() => const Center(
             child: CircularProgressIndicator(),
           ),
-          ProductDetailsNotFound() => ErrorView(
-            failure: const NotFoundFailure(),
-            onRetry: () => context.read<ProductDetailsCubit>().load(productId),
+          ProductDetailsNotFound() => EmptyView(
+            icon: Icons.search_off_rounded,
+            title: 'Product not found',
+            message: "This product doesn't exist or is no longer available.",
+            actionLabel: Navigator.canPop(context) ? 'Back to shop' : null,
+            onAction: () => Navigator.pop(context),
           ),
           ProductDetailsError(:final failure) => ErrorView(
             failure: failure,
