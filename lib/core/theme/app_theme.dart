@@ -50,7 +50,6 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: text.titleLarge?.copyWith(color: colors.onSurface),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -81,30 +80,21 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           minimumSize: const Size(64, 52),
           shape: roundedMedium,
-          textStyle: text.labelLarge,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(64, 52),
           shape: roundedMedium,
-          textStyle: text.labelLarge,
         ),
       ),
       chipTheme: ChipThemeData(
         shape: const StadiumBorder(),
         side: BorderSide(color: colors.outlineVariant),
-        labelStyle: text.labelLarge,
         showCheckmark: false,
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: colors.surfaceContainer,
-        indicatorColor: colors.primaryContainer,
-        labelTextStyle: WidgetStatePropertyAll(text.labelMedium),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: colors.surfaceContainer,
-        indicatorColor: colors.primaryContainer,
         labelType: NavigationRailLabelType.all,
       ),
       snackBarTheme: SnackBarThemeData(
