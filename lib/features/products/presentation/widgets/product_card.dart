@@ -7,6 +7,10 @@ import 'discount_badge.dart';
 import 'price_label.dart';
 import 'rating_label.dart';
 
+/// Shared by the card thumbnail and the first details image so the image
+/// flies between the two screens.
+String productImageHeroTag(int productId) => 'product-image-$productId';
+
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product, this.onTap});
 
@@ -36,9 +40,12 @@ class ProductCard extends StatelessWidget {
                       color: theme.colorScheme.surfaceContainerLowest,
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.sm),
-                        child: AppNetworkImage(
-                          product.thumbnail,
-                          fit: BoxFit.contain,
+                        child: Hero(
+                          tag: productImageHeroTag(product.id),
+                          child: AppNetworkImage(
+                            product.thumbnail,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),

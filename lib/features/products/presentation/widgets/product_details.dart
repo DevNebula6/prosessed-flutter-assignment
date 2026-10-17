@@ -11,6 +11,7 @@ import '../cubit/product_details_cubit.dart';
 import 'discount_badge.dart';
 import 'image_carousel.dart';
 import 'price_label.dart';
+import 'product_card.dart';
 import 'rating_label.dart';
 import 'review_tile.dart';
 import 'stock_status.dart';
@@ -70,6 +71,7 @@ class _DetailsContent extends StatelessWidget {
     final gallery = ImageCarousel(
       images: product.images.isEmpty ? [product.thumbnail] : product.images,
       placeholderUrl: product.thumbnail,
+      heroTag: productImageHeroTag(product.id),
     );
     final info = _ProductInfo(product, isLoading: isLoading);
 
