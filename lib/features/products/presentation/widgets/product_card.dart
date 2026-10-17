@@ -12,10 +12,16 @@ import 'rating_label.dart';
 String productImageHeroTag(int productId) => 'product-image-$productId';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product, this.onTap});
+  const ProductCard({
+    super.key,
+    required this.product,
+    this.onTap,
+    this.selected = false,
+  });
 
   final Product product;
   final VoidCallback? onTap;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +33,12 @@ class ProductCard extends StatelessWidget {
 
     return MergeSemantics(
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          side: selected
+              ? BorderSide(color: theme.colorScheme.primary, width: 2)
+              : BorderSide.none,
+        ),
         child: InkWell(
           onTap: onTap,
           child: Column(
