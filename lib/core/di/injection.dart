@@ -7,6 +7,7 @@ import '../../features/auth/data/datasources/auth_local_data_source.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../storage/token_storage.dart';
 
@@ -20,7 +21,9 @@ Future<void> initDependencies() async {
   getIt
     ..registerSingleton(prefs)
     ..registerLazySingleton(() => TokenStorage(const FlutterSecureStorage()))
-    ..registerLazySingleton<Dio>(createDio);
+    ..registerLazySingleton<Dio>(
+      () => createDio(interceptors: [AuthInterceptor(getIt())]),
+    );
 
   _registerAuth();
 }
