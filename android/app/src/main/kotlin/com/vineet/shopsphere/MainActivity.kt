@@ -1,4 +1,4 @@
-package com.example.flutter_assesment_prosessed
+package com.vineet.shopsphere
 
 import io.flutter.embedding.android.FlutterActivity
 
