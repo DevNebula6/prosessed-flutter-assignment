@@ -17,6 +17,24 @@ class ProductModel {
     required this.reviews,
   });
 
+  /// For saving a product locally; reviews are never stored.
+  factory ProductModel.fromEntity(Product product) {
+    return ProductModel(
+      id: product.id,
+      title: product.title,
+      category: product.category,
+      price: product.price,
+      discountPercentage: product.discountPercentage,
+      rating: product.rating,
+      stock: product.stock,
+      thumbnail: product.thumbnail,
+      brand: product.brand,
+      description: product.description,
+      images: product.images,
+      reviews: const [],
+    );
+  }
+
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
       id: json['id'] as int,
@@ -49,6 +67,20 @@ class ProductModel {
   final String description;
   final List<String> images;
   final List<ReviewModel> reviews;
+
+  /// Only the fields a product card shows, which is all local storage keeps.
+  /// [ProductModel.fromJson] fills the rest in as empty.
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'category': category,
+    'price': price,
+    'discountPercentage': discountPercentage,
+    'rating': rating,
+    'stock': stock,
+    'thumbnail': thumbnail,
+    if (brand != null) 'brand': brand,
+  };
 
   Product toEntity() => Product(
     id: id,

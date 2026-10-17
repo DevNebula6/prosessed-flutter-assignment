@@ -12,6 +12,9 @@ import '../../features/auth/domain/usecases/login.dart';
 import '../../features/auth/domain/usecases/logout.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/auth/presentation/cubit/login_cubit.dart';
+import '../../features/cart/data/datasources/cart_local_data_source.dart';
+import '../../features/cart/data/repositories/cart_repository_impl.dart';
+import '../../features/cart/domain/repositories/cart_repository.dart';
 import '../../features/products/data/datasources/product_remote_data_source.dart';
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
@@ -41,6 +44,7 @@ Future<void> initDependencies() async {
 
   _registerAuth();
   _registerProducts();
+  _registerCart();
 }
 
 void _registerAuth() {
@@ -73,4 +77,12 @@ void _registerProducts() {
     ..registerFactory(() => ProductsBloc(getIt()))
     ..registerFactory(() => CategoriesCubit(getIt()))
     ..registerFactory(() => ProductDetailsCubit(getIt()));
+}
+
+void _registerCart() {
+  getIt
+    ..registerLazySingleton(() => CartLocalDataSource(getIt()))
+    ..registerLazySingleton<CartRepository>(
+      () => CartRepositoryImpl(local: getIt()),
+    );
 }
