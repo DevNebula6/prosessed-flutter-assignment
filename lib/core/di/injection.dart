@@ -18,6 +18,7 @@ import '../../features/products/domain/repositories/product_repository.dart';
 import '../../features/products/domain/usecases/get_categories.dart';
 import '../../features/products/domain/usecases/get_products.dart';
 import '../../features/products/presentation/bloc/products_bloc.dart';
+import '../../features/products/presentation/cubit/categories_cubit.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../storage/token_storage.dart';
@@ -66,5 +67,6 @@ void _registerProducts() {
     )
     ..registerLazySingleton(() => GetProducts(getIt()))
     ..registerLazySingleton(() => GetCategories(getIt()))
-    ..registerFactory(() => ProductsBloc(getIt()));
+    ..registerFactory(() => ProductsBloc(getIt()))
+    ..registerFactory(() => CategoriesCubit(getIt()));
 }
