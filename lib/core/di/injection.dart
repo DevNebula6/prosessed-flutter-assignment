@@ -16,6 +16,7 @@ import '../../features/products/data/datasources/product_remote_data_source.dart
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
 import '../../features/products/domain/usecases/get_categories.dart';
+import '../../features/products/domain/usecases/get_product.dart';
 import '../../features/products/domain/usecases/get_products.dart';
 import '../../features/products/presentation/bloc/products_bloc.dart';
 import '../../features/products/presentation/cubit/categories_cubit.dart';
@@ -66,6 +67,7 @@ void _registerProducts() {
       () => ProductRepositoryImpl(getIt()),
     )
     ..registerLazySingleton(() => GetProducts(getIt()))
+    ..registerLazySingleton(() => GetProduct(getIt()))
     ..registerLazySingleton(() => GetCategories(getIt()))
     ..registerFactory(() => ProductsBloc(getIt()))
     ..registerFactory(() => CategoriesCubit(getIt()));

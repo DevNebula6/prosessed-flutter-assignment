@@ -1,5 +1,6 @@
 import '../../../../core/error/error_mapper.dart';
 import '../../../../core/error/result.dart';
+import '../../domain/entities/product.dart';
 import '../../domain/entities/product_category.dart';
 import '../../domain/entities/product_sort.dart';
 import '../../domain/entities/products_page.dart';
@@ -28,6 +29,14 @@ class ProductRepositoryImpl implements ProductRepository {
         limit: limit,
       );
       return page.toEntity();
+    });
+  }
+
+  @override
+  Future<Result<Product>> getProduct(int id) {
+    return guard(() async {
+      final product = await _remote.getProduct(id);
+      return product.toEntity();
     });
   }
 
