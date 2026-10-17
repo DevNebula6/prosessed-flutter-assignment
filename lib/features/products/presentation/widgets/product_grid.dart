@@ -5,6 +5,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../bloc/products_bloc.dart';
+import '../pages/product_details_page.dart';
 import 'product_card.dart';
 import 'product_card_skeleton.dart';
 
@@ -58,7 +59,13 @@ class ProductGrid extends StatelessWidget {
                 gridDelegate: productGridDelegate,
                 itemCount: state.products.length,
                 itemBuilder: (context, index) {
-                  return ProductCard(product: state.products[index]);
+                  final product = state.products[index];
+                  return ProductCard(
+                    product: product,
+                    onTap: () =>
+                        Navigator.of(context)
+                            .push(ProductDetailsPage.route(product)),
+                  );
                 },
               ),
             ),
