@@ -28,6 +28,10 @@ import '../../features/products/domain/usecases/get_products.dart';
 import '../../features/products/presentation/bloc/products_bloc.dart';
 import '../../features/products/presentation/cubit/categories_cubit.dart';
 import '../../features/products/presentation/cubit/product_details_cubit.dart';
+import '../../features/profile/data/datasources/profile_remote_data_source.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/get_profile.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../storage/token_storage.dart';
@@ -49,6 +53,7 @@ Future<void> initDependencies() async {
   _registerAuth();
   _registerProducts();
   _registerCart();
+  _registerProfile();
 }
 
 void _registerAuth() {
@@ -93,4 +98,13 @@ void _registerCart() {
     ..registerLazySingleton(() => PlaceOrder(getIt()))
     ..registerFactory(() => CartCubit(getIt()))
     ..registerFactory(() => CheckoutCubit(getIt()));
+}
+
+void _registerProfile() {
+  getIt
+    ..registerLazySingleton(() => ProfileRemoteDataSource(getIt()))
+    ..registerLazySingleton<ProfileRepository>(
+      () => ProfileRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton(() => GetProfile(getIt()));
 }
