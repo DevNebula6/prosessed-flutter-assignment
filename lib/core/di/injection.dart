@@ -10,6 +10,8 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/get_saved_user.dart';
 import '../../features/auth/domain/usecases/login.dart';
 import '../../features/auth/domain/usecases/logout.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../features/auth/presentation/cubit/login_cubit.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../storage/token_storage.dart';
@@ -44,5 +46,7 @@ void _registerAuth() {
     )
     ..registerLazySingleton(() => Login(getIt()))
     ..registerLazySingleton(() => Logout(getIt()))
-    ..registerLazySingleton(() => GetSavedUser(getIt()));
+    ..registerLazySingleton(() => GetSavedUser(getIt()))
+    ..registerFactory(() => AuthCubit(getSavedUser: getIt(), logout: getIt()))
+    ..registerFactory(() => LoginCubit(getIt()));
 }
