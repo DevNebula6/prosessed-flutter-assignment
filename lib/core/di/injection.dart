@@ -13,9 +13,12 @@ import '../../features/auth/domain/usecases/logout.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/auth/presentation/cubit/login_cubit.dart';
 import '../../features/cart/data/datasources/cart_local_data_source.dart';
+import '../../features/cart/data/datasources/cart_remote_data_source.dart';
 import '../../features/cart/data/repositories/cart_repository_impl.dart';
 import '../../features/cart/domain/repositories/cart_repository.dart';
+import '../../features/cart/domain/usecases/place_order.dart';
 import '../../features/cart/presentation/cubit/cart_cubit.dart';
+import '../../features/cart/presentation/cubit/checkout_cubit.dart';
 import '../../features/products/data/datasources/product_remote_data_source.dart';
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
@@ -83,8 +86,11 @@ void _registerProducts() {
 void _registerCart() {
   getIt
     ..registerLazySingleton(() => CartLocalDataSource(getIt()))
+    ..registerLazySingleton(() => CartRemoteDataSource(getIt()))
     ..registerLazySingleton<CartRepository>(
-      () => CartRepositoryImpl(local: getIt()),
+      () => CartRepositoryImpl(local: getIt(), remote: getIt()),
     )
-    ..registerFactory(() => CartCubit(getIt()));
+    ..registerLazySingleton(() => PlaceOrder(getIt()))
+    ..registerFactory(() => CartCubit(getIt()))
+    ..registerFactory(() => CheckoutCubit(getIt()));
 }
