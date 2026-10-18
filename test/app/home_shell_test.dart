@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopsphere/app/home_shell.dart';
+import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 
 import '../helpers/test_app.dart';
 
@@ -17,6 +18,18 @@ void main() {
     final rail = tester.getRect(find.byType(NavigationRail));
     expect(rail.top, 0);
     expect(rail.bottom, 800);
+  });
+
+  testWidgets('the tabs beside the rail leave the cutout inset to the rail', (
+    tester,
+  ) async {
+    // A phone in landscape with its camera cutout on the left.
+    tester.view.padding = const FakeViewPadding(left: 48);
+    addTearDown(tester.view.resetPadding);
+    await pumpTestApp(tester, const HomeShell(), size: const Size(915, 412));
+
+    final shop = tester.element(find.byType(ProductsPage));
+    expect(MediaQuery.paddingOf(shop).left, 0);
   });
 
   // Rotating across a breakpoint changes the layout around the tabs. The

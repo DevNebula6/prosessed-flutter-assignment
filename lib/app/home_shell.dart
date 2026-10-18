@@ -82,12 +82,18 @@ class _HomeShellState extends State<HomeShell> {
           // the visible tab takes part in hero animations; duplicate hero
           // tags on a route are an error.
           Expanded(
-            child: IndexedStack(
-              index: _index,
-              children: [
-                for (final (index, page) in _pages.indexed)
-                  HeroMode(enabled: index == _index, child: page),
-              ],
+            // The rail already keeps clear of a landscape cutout on its side,
+            // so the tabs shouldn't indent for it again.
+            child: MediaQuery.removePadding(
+              context: context,
+              removeLeft: useRail,
+              child: IndexedStack(
+                index: _index,
+                children: [
+                  for (final (index, page) in _pages.indexed)
+                    HeroMode(enabled: index == _index, child: page),
+                ],
+              ),
             ),
           ),
         ],
