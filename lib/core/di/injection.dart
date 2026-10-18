@@ -58,7 +58,8 @@ Future<void> initDependencies() async {
     ..registerLazySingleton(() => ThemeStorage(getIt()))
     ..registerFactory(() => ThemeBloc(getIt()))
     ..registerLazySingleton<Dio>(
-      // Inserted first so the debug log shows the Authorization header.
+      // First in line, so a 401 that a token refresh fixes is never logged as
+      // an error.
       () => createDio()
         ..interceptors.insert(
           0,
