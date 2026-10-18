@@ -85,20 +85,19 @@ class _HomeShellState extends State<HomeShell> {
     return Scaffold(
       body: Row(
         children: [
-          SafeArea(
-            right: false,
-            child: NavigationRail(
-              selectedIndex: _index,
-              onDestinationSelected: _select,
-              destinations: [
-                for (final tab in _tabs)
-                  NavigationRailDestination(
-                    icon: tab.icon,
-                    selectedIcon: tab.selectedIcon,
-                    label: Text(tab.label),
-                  ),
-              ],
-            ),
+          // The rail keeps clear of the system bars itself, and paints its
+          // background behind them.
+          NavigationRail(
+            selectedIndex: _index,
+            onDestinationSelected: _select,
+            destinations: [
+              for (final tab in _tabs)
+                NavigationRailDestination(
+                  icon: tab.icon,
+                  selectedIcon: tab.selectedIcon,
+                  label: Text(tab.label),
+                ),
+            ],
           ),
           const VerticalDivider(width: 1),
           Expanded(child: body),
