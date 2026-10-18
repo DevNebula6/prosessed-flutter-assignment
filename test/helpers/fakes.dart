@@ -57,7 +57,10 @@ class FakeAuthRepository extends Fake implements AuthRepository {
 }
 
 class FakeProductRepository extends Fake implements ProductRepository {
-  final products = [for (var id = 1; id <= 6; id++) testProduct(id)];
+  final products = [
+    for (var id = 1; id <= 6; id++) testProduct(id),
+    testProduct(7, stock: 0),
+  ];
 
   @override
   Future<Result<ProductsPage>> getProducts({
