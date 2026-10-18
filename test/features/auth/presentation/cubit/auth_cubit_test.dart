@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -13,6 +15,7 @@ class MockLogout extends Mock implements Logout {}
 void main() {
   late MockGetSavedUser getSavedUser;
   late MockLogout logout;
+  late StreamController<void> sessionExpired;
 
   const user = User(
     id: 1,
@@ -26,10 +29,18 @@ void main() {
   setUp(() {
     getSavedUser = MockGetSavedUser();
     logout = MockLogout();
+    sessionExpired = StreamController<void>();
+    when(() => logout()).thenAnswer((_) async {});
   });
 
+  tearDown(() => sessionExpired.close());
+
   AuthCubit buildCubit() {
-    return AuthCubit(getSavedUser: getSavedUser, logout: logout);
+    return AuthCubit(
+      getSavedUser: getSavedUser,
+      logout: logout,
+      sessionExpired: sessionExpired.stream,
+    );
   }
 
   test('starts in AuthInitial', () {
@@ -61,11 +72,32 @@ void main() {
 
   blocTest<AuthCubit, AuthState>(
     'logout clears the session and emits Unauthenticated',
-    setUp: () => when(() => logout()).thenAnswer((_) async {}),
     build: buildCubit,
     seed: () => const Authenticated(user),
     act: (cubit) => cubit.logout(),
     expect: () => [const Unauthenticated()],
     verify: (_) => verify(() => logout()).called(1),
+  );
+
+  blocTest<AuthCubit, AuthState>(
+    'signs out with a message when the session expires',
+    build: buildCubit,
+    seed: () => const Authenticated(user),
+    act: (_) => sessionExpired.add(null),
+    expect: () => [
+      const Unauthenticated(
+        message: 'Your session has expired. Please sign in again.',
+      ),
+    ],
+    verify: (_) => verify(() => logout()).called(1),
+  );
+
+  blocTest<AuthCubit, AuthState>(
+    'ignores an expired session once already signed out',
+    build: buildCubit,
+    seed: () => const Unauthenticated(),
+    act: (_) => sessionExpired.add(null),
+    expect: () => <AuthState>[],
+    verify: (_) => verifyNever(() => logout()),
   );
 }

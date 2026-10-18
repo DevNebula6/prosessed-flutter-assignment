@@ -26,6 +26,10 @@ import 'package:shopsphere/features/products/domain/usecases/get_categories.dart
 import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
 import 'package:shopsphere/features/products/presentation/bloc/products_bloc.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:shopsphere/features/profile/domain/entities/user_profile.dart';
+import 'package:shopsphere/features/profile/domain/repositories/profile_repository.dart';
+import 'package:shopsphere/features/profile/domain/usecases/get_profile.dart';
+import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -34,6 +38,9 @@ class MockProductRepository extends Mock implements ProductRepository {}
 class FakeCartRepository extends Fake implements CartRepository {
   @override
   Cart loadCart() => const Cart();
+
+  @override
+  Future<void> saveCart(Cart cart) async {}
 }
 
 void main() {
@@ -73,13 +80,17 @@ void main() {
         () => AuthCubit(
           getSavedUser: GetSavedUser(repository),
           logout: Logout(repository),
+          sessionExpired: const Stream.empty(),
         ),
       )
       ..registerFactory(() => LoginCubit(Login(repository)))
       ..registerFactory(() => ProductsBloc(GetProducts(products)))
       ..registerFactory(() => CategoriesCubit(GetCategories(products)))
       ..registerFactory(() => CartCubit(FakeCartRepository()))
-      ..registerFactory(() => CheckoutCubit(PlaceOrder(FakeCartRepository())));
+      ..registerFactory(() => CheckoutCubit(PlaceOrder(FakeCartRepository())))
+      ..registerFactory(
+        () => ProfileCubit(GetProfile(FakeProfileRepository())),
+      );
   });
 
   void stubLogin(String password, Result<User> result) {
@@ -125,4 +136,9 @@ void main() {
     expect(find.byType(HomeShell), findsOneWidget);
     expect(find.byType(LoginPage), findsNothing);
   });
+}
+
+class FakeProfileRepository extends Fake implements ProfileRepository {
+  @override
+  Future<Result<UserProfile>> getProfile() async => const Err(NetworkFailure());
 }

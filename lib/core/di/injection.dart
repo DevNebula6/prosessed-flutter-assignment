@@ -28,8 +28,14 @@ import '../../features/products/domain/usecases/get_products.dart';
 import '../../features/products/presentation/bloc/products_bloc.dart';
 import '../../features/products/presentation/cubit/categories_cubit.dart';
 import '../../features/products/presentation/cubit/product_details_cubit.dart';
+import '../../features/profile/data/datasources/profile_remote_data_source.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/get_profile.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
+import '../network/session_events.dart';
 import '../storage/token_storage.dart';
 
 final getIt = GetIt.instance;
@@ -42,13 +48,24 @@ Future<void> initDependencies() async {
   getIt
     ..registerSingleton(prefs)
     ..registerLazySingleton(() => TokenStorage(const FlutterSecureStorage()))
+    ..registerLazySingleton(SessionEvents.new)
     ..registerLazySingleton<Dio>(
-      () => createDio(interceptors: [AuthInterceptor(getIt())]),
+      // Inserted first so the debug log shows the Authorization header.
+      () => createDio()
+        ..interceptors.insert(
+          0,
+          AuthInterceptor(
+            tokenStorage: getIt(),
+            plainClient: createDio(),
+            sessionEvents: getIt(),
+          ),
+        ),
     );
 
   _registerAuth();
   _registerProducts();
   _registerCart();
+  _registerProfile();
 }
 
 void _registerAuth() {
@@ -65,7 +82,13 @@ void _registerAuth() {
     ..registerLazySingleton(() => Login(getIt()))
     ..registerLazySingleton(() => Logout(getIt()))
     ..registerLazySingleton(() => GetSavedUser(getIt()))
-    ..registerFactory(() => AuthCubit(getSavedUser: getIt(), logout: getIt()))
+    ..registerFactory(
+      () => AuthCubit(
+        getSavedUser: getIt(),
+        logout: getIt(),
+        sessionExpired: getIt<SessionEvents>().expired,
+      ),
+    )
     ..registerFactory(() => LoginCubit(getIt()));
 }
 
@@ -93,4 +116,14 @@ void _registerCart() {
     ..registerLazySingleton(() => PlaceOrder(getIt()))
     ..registerFactory(() => CartCubit(getIt()))
     ..registerFactory(() => CheckoutCubit(getIt()));
+}
+
+void _registerProfile() {
+  getIt
+    ..registerLazySingleton(() => ProfileRemoteDataSource(getIt()))
+    ..registerLazySingleton<ProfileRepository>(
+      () => ProfileRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton(() => GetProfile(getIt()))
+    ..registerFactory(() => ProfileCubit(getIt()));
 }

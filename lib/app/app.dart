@@ -26,6 +26,7 @@ class ShopSphereApp extends StatelessWidget {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         navigatorKey: navigatorKey,
+        scaffoldMessengerKey: scaffoldMessengerKey,
         builder: (context, child) => BlocListener<AuthCubit, AuthState>(
           listenWhen: (previous, current) {
             return previous.runtimeType != current.runtimeType;
@@ -39,6 +40,9 @@ class ShopSphereApp extends StatelessWidget {
   }
 
   void _onAuthChanged(BuildContext context, AuthState state) {
+    // The cart belongs to whoever is signed in.
+    if (state is Unauthenticated) context.read<CartCubit>().clear();
+
     final route = switch (state) {
       Authenticated() => HomeShell.route(),
       Unauthenticated() => LoginPage.route(),
@@ -46,6 +50,13 @@ class ShopSphereApp extends StatelessWidget {
     };
     if (route != null) {
       navigatorKey.currentState!.pushAndRemoveUntil(route, (_) => false);
+    }
+
+    // Explains a sign-out the user didn't ask for, like an expired session.
+    if (state case Unauthenticated(:final message?)) {
+      scaffoldMessengerKey.currentState
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(message)));
     }
   }
 }
