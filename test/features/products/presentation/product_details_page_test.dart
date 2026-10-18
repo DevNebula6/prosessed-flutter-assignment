@@ -78,6 +78,24 @@ void main() {
     expect(snackBar.bottom, lessThanOrEqualTo(bar.top));
   });
 
+  testWidgets('the added-to-cart message goes away on its own', (tester) async {
+    await pumpTestApp(
+      tester,
+      ProductDetailsPage(productId: 1, preview: testProduct(1)),
+    );
+
+    await tester.tap(find.text('Add to cart'));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(SnackBar), findsOneWidget);
+
+    // Frame by frame, as on a device: the 4s timer starts once the snack bar
+    // has finished sliding in.
+    for (var second = 0; second < 8; second++) {
+      await tester.pump(const Duration(seconds: 1));
+    }
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
   testWidgets('an out of stock product cannot be added', (tester) async {
     await pumpTestApp(
       tester,

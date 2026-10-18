@@ -40,6 +40,8 @@ class _AddToCartBarState extends State<AddToCartBar> {
             AppSpacing.lg,
             barHeight + AppSpacing.sm,
           ),
+          // Same as the cart's Undo: time out unless a screen reader is on.
+          persist: MediaQuery.accessibleNavigationOf(context),
           content: Text(
             quantity == 1
                 ? 'Added to your cart'
