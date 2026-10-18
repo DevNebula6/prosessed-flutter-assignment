@@ -40,7 +40,9 @@ import '../../features/wishlist/presentation/bloc/wishlist_bloc.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../network/session_events.dart';
+import '../storage/theme_storage.dart';
 import '../storage/token_storage.dart';
+import '../theme/theme_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -53,6 +55,8 @@ Future<void> initDependencies() async {
     ..registerSingleton(prefs)
     ..registerLazySingleton(() => TokenStorage(const FlutterSecureStorage()))
     ..registerLazySingleton(SessionEvents.new)
+    ..registerLazySingleton(() => ThemeStorage(getIt()))
+    ..registerFactory(() => ThemeBloc(getIt()))
     ..registerLazySingleton<Dio>(
       // Inserted first so the debug log shows the Authorization header.
       () => createDio()

@@ -6,6 +6,8 @@ import 'package:shopsphere/app/home_shell.dart';
 import 'package:shopsphere/core/di/injection.dart';
 import 'package:shopsphere/core/error/failures.dart';
 import 'package:shopsphere/core/error/result.dart';
+import 'package:shopsphere/core/storage/theme_storage.dart';
+import 'package:shopsphere/core/theme/theme_bloc.dart';
 import 'package:shopsphere/features/auth/domain/entities/user.dart';
 import 'package:shopsphere/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shopsphere/features/auth/domain/usecases/get_saved_user.dart';
@@ -92,7 +94,8 @@ void main() {
       ..registerFactory(() => CartCubit(FakeCartRepository()))
       ..registerFactory(() => CheckoutCubit(PlaceOrder(FakeCartRepository())))
       ..registerFactory(() => ProfileCubit(GetProfile(FakeProfileRepository())))
-      ..registerFactory(() => WishlistBloc(FakeWishlistRepository()));
+      ..registerFactory(() => WishlistBloc(FakeWishlistRepository()))
+      ..registerFactory(() => ThemeBloc(FakeThemeStorage()));
   });
 
   void stubLogin(String password, Result<User> result) {
@@ -151,4 +154,9 @@ class FakeWishlistRepository extends Fake implements WishlistRepository {
 
   @override
   Future<void> saveWishlist(List<Product> products) async {}
+}
+
+class FakeThemeStorage extends Fake implements ThemeStorage {
+  @override
+  ThemeMode read() => ThemeMode.light;
 }
