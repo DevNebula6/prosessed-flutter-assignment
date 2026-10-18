@@ -95,9 +95,11 @@ class _ProductsViewState extends State<_ProductsView> {
       ),
     );
 
+    // A failed refresh, with products still on screen. A failed next page
+    // shows in the list footer instead.
     return BlocListener<ProductsBloc, ProductsState>(
       listenWhen: (previous, current) {
-        return previous.failure == null &&
+        return previous.status == ProductsStatus.loading &&
             current.failure != null &&
             current.products.isNotEmpty;
       },
@@ -111,15 +113,18 @@ class _ProductsViewState extends State<_ProductsView> {
           title: const Text('Discover'),
           actions: const [SortButton()],
         ),
-        body: _isExpanded
-            ? Row(
-                children: [
-                  Expanded(flex: 3, child: list),
-                  const VerticalDivider(width: 1),
-                  Expanded(flex: 2, child: _DetailsPane(product: _selected)),
-                ],
-              )
-            : list,
+        // The list stays first in the same Row whether or not the side pane
+        // shows, so it keeps its scroll position and search text when a
+        // rotation brings the pane in or takes it away.
+        body: Row(
+          children: [
+            Expanded(flex: 3, child: list),
+            if (_isExpanded) ...[
+              const VerticalDivider(width: 1),
+              Expanded(flex: 2, child: _DetailsPane(product: _selected)),
+            ],
+          ],
+        ),
       ),
     );
   }

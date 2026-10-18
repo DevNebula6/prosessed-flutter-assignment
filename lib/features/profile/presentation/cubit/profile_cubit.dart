@@ -18,6 +18,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     if (state is! ProfileLoaded) emit(const ProfileLoading());
 
     final result = await _getProfile();
+    if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => ProfileLoaded(value),
       Err(:final failure) => ProfileError(failure),

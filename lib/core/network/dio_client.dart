@@ -15,8 +15,11 @@ Dio createDio() {
 
   if (kDebugMode) {
     dio.interceptors.add(
+      // Request headers carry the access token and bodies the password, so
+      // log only what was called and how it went.
       LogInterceptor(
-        requestBody: true,
+        requestHeader: false,
+        responseHeader: false,
         logPrint: (line) => debugPrint(line.toString()),
       ),
     );

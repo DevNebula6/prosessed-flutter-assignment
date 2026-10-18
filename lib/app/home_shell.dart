@@ -52,42 +52,18 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    // IndexedStack keeps each tab's state, like scroll position, when switching.
-    // Shop and Wishlist can show the same product, so only the visible tab
-    // takes part in hero animations; duplicate hero tags on a route are an
-    // error.
-    final body = IndexedStack(
-      index: _index,
-      children: [
-        for (final (index, page) in _pages.indexed)
-          HeroMode(enabled: index == _index, child: page),
-      ],
-    );
-
-    if (ScreenSize.of(context) == ScreenSize.compact) {
-      return Scaffold(
-        body: body,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: _select,
-          destinations: [
-            for (final tab in _tabs)
-              NavigationDestination(
-                icon: tab.icon,
-                selectedIcon: tab.selectedIcon,
-                label: tab.label,
-              ),
-          ],
-        ),
-      );
-    }
+    final useRail = ScreenSize.of(context) != ScreenSize.compact;
 
     return Scaffold(
+      // The same Row in both layouts, with the tabs last, so rotating across
+      // the breakpoint only adds or removes the rail and the tabs keep their
+      // state.
       body: Row(
         children: [
-          SafeArea(
-            right: false,
-            child: NavigationRail(
+          if (useRail) ...[
+            // The rail keeps clear of the system bars itself, and paints its
+            // background behind them.
+            NavigationRail(
               selectedIndex: _index,
               onDestinationSelected: _select,
               destinations: [
@@ -99,11 +75,43 @@ class _HomeShellState extends State<HomeShell> {
                   ),
               ],
             ),
+            const VerticalDivider(width: 1),
+          ],
+          // IndexedStack keeps each tab's state, like scroll position, when
+          // switching. Shop and Wishlist can show the same product, so only
+          // the visible tab takes part in hero animations; duplicate hero
+          // tags on a route are an error.
+          Expanded(
+            // The rail already keeps clear of a landscape cutout on its side,
+            // so the tabs shouldn't indent for it again.
+            child: MediaQuery.removePadding(
+              context: context,
+              removeLeft: useRail,
+              child: IndexedStack(
+                index: _index,
+                children: [
+                  for (final (index, page) in _pages.indexed)
+                    HeroMode(enabled: index == _index, child: page),
+                ],
+              ),
+            ),
           ),
-          const VerticalDivider(width: 1),
-          Expanded(child: body),
         ],
       ),
+      bottomNavigationBar: useRail
+          ? null
+          : NavigationBar(
+              selectedIndex: _index,
+              onDestinationSelected: _select,
+              destinations: [
+                for (final tab in _tabs)
+                  NavigationDestination(
+                    icon: tab.icon,
+                    selectedIcon: tab.selectedIcon,
+                    label: tab.label,
+                  ),
+              ],
+            ),
     );
   }
 }

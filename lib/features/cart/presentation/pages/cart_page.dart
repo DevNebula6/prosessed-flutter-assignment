@@ -24,7 +24,10 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<CheckoutCubit>(),
-      child: const _CartView(),
+      // On the Cart tab this Scaffold sits inside the home one, and snackbars
+      // only show in the outermost Scaffold of a messenger, on top of the
+      // checkout panel. Its own messenger keeps them inside this Scaffold.
+      child: const ScaffoldMessenger(child: _CartView()),
     );
   }
 }
@@ -54,29 +57,42 @@ class _CartView extends StatelessWidget {
 
     return BlocListener<CheckoutCubit, CheckoutState>(
       listener: _onCheckoutChanged,
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Cart')),
-        body: cart.isEmpty
-            ? const EmptyView(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Summary beside the list on wide screens, pinned below it otherwise.
+          final isWide = constraints.maxWidth >= 720;
+
+          return Scaffold(
+            appBar: AppBar(title: const Text('Cart')),
+            body: switch (cart) {
+              Cart(isEmpty: true) => const EmptyView(
                 icon: Icons.shopping_cart_outlined,
                 title: 'Your cart is empty',
                 message: 'Products you add will show up here.',
-              )
-            : _CartContent(cart),
+              ),
+              _ when isWide => _WideCart(cart),
+              _ => _CartItems(cart),
+            },
+            // As the bottom bar rather than part of the body, so snackbars
+            // like "Removed … Undo" appear above it instead of covering it.
+            bottomNavigationBar: cart.isEmpty || isWide
+                ? null
+                : _CheckoutPanel(cart),
+          );
+        },
       ),
     );
   }
 }
 
-class _CartContent extends StatelessWidget {
-  const _CartContent(this.cart);
+class _CartItems extends StatelessWidget {
+  const _CartItems(this.cart);
 
   final Cart cart;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final items = ListView.separated(
+    return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       itemCount: cart.items.length,
       itemBuilder: (context, index) => CartItemTile(cart.items[index]),
@@ -86,53 +102,58 @@ class _CartContent extends StatelessWidget {
         endIndent: AppSpacing.lg,
       ),
     );
-    final checkout = _Checkout(cart);
+  }
+}
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Summary beside the list on wide screens, pinned below it otherwise.
-        if (constraints.maxWidth >= 720) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: items),
-              SizedBox(
-                width: 360,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: checkout,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
+class _WideCart extends StatelessWidget {
+  const _WideCart(this.cart);
 
-        return Column(
-          children: [
-            Expanded(child: items),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerLow,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppRadius.lg),
-                ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: checkout,
-                ),
+  final Cart cart;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: _CartItems(cart)),
+        SizedBox(
+          width: 360,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: _Checkout(cart),
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CheckoutPanel extends StatelessWidget {
+  const _CheckoutPanel(this.cart);
+
+  final Cart cart;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppRadius.lg),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: _Checkout(cart),
+        ),
+      ),
     );
   }
 }

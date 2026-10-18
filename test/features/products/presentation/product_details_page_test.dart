@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shopsphere/features/cart/presentation/widgets/add_to_cart_bar.dart';
 import 'package:shopsphere/features/cart/presentation/widgets/cart_icon.dart';
 import 'package:shopsphere/features/products/presentation/pages/product_details_page.dart';
 
@@ -51,6 +52,48 @@ void main() {
       find.descendant(of: find.byType(CartIcon), matching: find.text('2')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('the added-to-cart message stays clear of the button', (
+    tester,
+  ) async {
+    await pumpTestApp(
+      tester,
+      ProductDetailsPage(productId: 1, preview: testProduct(1)),
+    );
+
+    await tester.tap(find.text('Add to cart'));
+    await tester.pump(const Duration(seconds: 1));
+
+    // The visible card, not the SnackBar box, which also spans its margin.
+    final snackBar = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(SnackBar),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    final bar = tester.getRect(find.byType(AddToCartBar));
+    expect(snackBar.bottom, lessThanOrEqualTo(bar.top));
+  });
+
+  testWidgets('the added-to-cart message goes away on its own', (tester) async {
+    await pumpTestApp(
+      tester,
+      ProductDetailsPage(productId: 1, preview: testProduct(1)),
+    );
+
+    await tester.tap(find.text('Add to cart'));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(SnackBar), findsOneWidget);
+
+    // Frame by frame, as on a device: the 4s timer starts once the snack bar
+    // has finished sliding in.
+    for (var second = 0; second < 8; second++) {
+      await tester.pump(const Duration(seconds: 1));
+    }
+    expect(find.byType(SnackBar), findsNothing);
   });
 
   testWidgets('an out of stock product cannot be added', (tester) async {

@@ -28,6 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> checkSession() async {
     final user = await _getSavedUser();
+    if (isClosed) return;
     emit(user == null ? const Unauthenticated() : Authenticated(user));
   }
 
@@ -35,6 +36,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logout() async {
     await _logout();
+    if (isClosed) return;
     emit(const Unauthenticated());
   }
 
@@ -43,6 +45,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (state is! Authenticated) return;
 
     await _logout();
+    if (isClosed) return;
     emit(Unauthenticated(message: const UnauthorizedFailure().message));
   }
 

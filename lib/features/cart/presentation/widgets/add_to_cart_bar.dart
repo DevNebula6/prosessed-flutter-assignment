@@ -24,6 +24,9 @@ class _AddToCartBarState extends State<AddToCartBar> {
   void _add(int quantity) {
     // Grab the navigator now, the snackbar can outlive this page.
     final navigator = Navigator.of(context);
+    // This bar sits at the bottom of the page body, where a snackbar would
+    // land on top of it, so lift the snackbar above the bar.
+    final barHeight = context.size?.height ?? 0;
     context.read<CartCubit>().add(widget.product, quantity: quantity);
     setState(() => _quantity = 1);
 
@@ -31,6 +34,14 @@ class _AddToCartBarState extends State<AddToCartBar> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
+          margin: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            barHeight + AppSpacing.sm,
+          ),
+          // Same as the cart's Undo: time out unless a screen reader is on.
+          persist: MediaQuery.accessibleNavigationOf(context),
           content: Text(
             quantity == 1
                 ? 'Added to your cart'

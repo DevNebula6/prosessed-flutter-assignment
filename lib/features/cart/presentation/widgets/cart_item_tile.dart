@@ -20,6 +20,9 @@ class CartItemTile extends StatelessWidget {
       ..showSnackBar(
         SnackBar(
           content: Text('Removed ${item.product.title}'),
+          // Snack bars with an action stay up until dismissed by default.
+          // Only keep it for screen reader users, who need time to reach Undo.
+          persist: MediaQuery.accessibleNavigationOf(context),
           action: SnackBarAction(
             label: 'Undo',
             onPressed: () => cart.add(item.product, quantity: item.quantity),

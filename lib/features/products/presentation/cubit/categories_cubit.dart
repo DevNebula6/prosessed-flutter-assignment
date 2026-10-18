@@ -15,6 +15,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> load() async {
     emit(const CategoriesLoading());
     final result = await _getCategories();
+    if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => CategoriesLoaded(value),
       Err() => const CategoriesError(),

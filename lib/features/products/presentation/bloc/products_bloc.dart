@@ -123,15 +123,14 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
             hasReachedEnd: !page.hasMore,
           ),
         );
+      case Err(:final failure) when state.products.isEmpty:
+        emit(state.copyWith(status: ProductsStatus.failure, failure: failure));
       case Err(:final failure):
-        emit(
-          state.copyWith(
-            status: state.products.isEmpty
-                ? ProductsStatus.failure
-                : ProductsStatus.success,
-            failure: failure,
-          ),
-        );
+        // A refresh failed with products on screen. Keep them, and set the
+        // failure only for a moment so the page can show it in a snackbar;
+        // left set, the list footer would offer to load the next page.
+        emit(state.copyWith(status: ProductsStatus.success, failure: failure));
+        emit(state.copyWith(status: ProductsStatus.success));
     }
   }
 
