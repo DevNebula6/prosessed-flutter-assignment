@@ -32,6 +32,7 @@ import '../../features/profile/data/datasources/profile_remote_data_source.dart'
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/get_profile.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../storage/token_storage.dart';
@@ -106,5 +107,6 @@ void _registerProfile() {
     ..registerLazySingleton<ProfileRepository>(
       () => ProfileRepositoryImpl(getIt()),
     )
-    ..registerLazySingleton(() => GetProfile(getIt()));
+    ..registerLazySingleton(() => GetProfile(getIt()))
+    ..registerFactory(() => ProfileCubit(getIt()));
 }
