@@ -12,13 +12,14 @@ class CartSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final items = cart.itemCount == 1 ? '1 item' : '${cart.itemCount} items';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _SummaryRow(
-          label: 'Subtotal (${cart.itemCount} items)',
+          label: 'Subtotal ($items)',
           value: formatPrice(cart.subtotal),
         ),
         const SizedBox(height: AppSpacing.sm),

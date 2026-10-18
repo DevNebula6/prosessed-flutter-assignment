@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopsphere/app/home_shell.dart';
 import 'package:shopsphere/features/cart/domain/entities/cart.dart';
+import 'package:shopsphere/features/cart/presentation/pages/cart_page.dart';
 
 import '../../../helpers/fakes.dart';
 import '../../../helpers/test_app.dart';
@@ -39,5 +40,12 @@ void main() {
       ),
     );
     expect(snackBar.bottom, lessThanOrEqualTo(button.top));
+  });
+
+  testWidgets('a single unit reads as one item', (tester) async {
+    await registerFakeDependencies(cart: const Cart().add(testProduct(1)));
+    await pumpTestApp(tester, const CartPage());
+
+    expect(find.text('Subtotal (1 item)'), findsOneWidget);
   });
 }
