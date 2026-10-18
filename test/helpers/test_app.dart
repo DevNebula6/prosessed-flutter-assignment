@@ -13,9 +13,11 @@ import 'package:shopsphere/features/auth/domain/usecases/login.dart';
 import 'package:shopsphere/features/auth/domain/usecases/logout.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:shopsphere/features/cart/domain/entities/cart.dart';
 import 'package:shopsphere/features/cart/domain/usecases/place_order.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/checkout_cubit.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_categories.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_product.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
@@ -29,12 +31,18 @@ import 'package:shopsphere/features/wishlist/presentation/bloc/wishlist_bloc.dar
 import 'fakes.dart';
 
 /// Registers every bloc the app asks [getIt] for, backed by in-memory
-/// repositories. Pass [auth] to control sign-in from the test.
-Future<void> registerFakeDependencies({AuthRepository? auth}) async {
+/// repositories. Pass [auth] to control sign-in from the test, and a saved
+/// [cart] or [wishlist] to start with.
+Future<void> registerFakeDependencies({
+  AuthRepository? auth,
+  Cart cart = const Cart(),
+  List<Product> wishlist = const [],
+}) async {
   await getIt.reset();
   final authRepository = auth ?? FakeAuthRepository(savedUser: testUser);
   final products = FakeProductRepository();
-  final cart = FakeCartRepository();
+  final cartRepository = FakeCartRepository(cart);
+  final wishlistRepository = FakeWishlistRepository(wishlist);
 
   getIt
     ..registerFactory(
@@ -48,10 +56,10 @@ Future<void> registerFakeDependencies({AuthRepository? auth}) async {
     ..registerFactory(() => ProductsBloc(GetProducts(products)))
     ..registerFactory(() => CategoriesCubit(GetCategories(products)))
     ..registerFactory(() => ProductDetailsCubit(GetProduct(products)))
-    ..registerFactory(() => CartCubit(cart))
-    ..registerFactory(() => CheckoutCubit(PlaceOrder(cart)))
+    ..registerFactory(() => CartCubit(cartRepository))
+    ..registerFactory(() => CheckoutCubit(PlaceOrder(cartRepository)))
     ..registerFactory(() => ProfileCubit(GetProfile(FakeProfileRepository())))
-    ..registerFactory(() => WishlistBloc(FakeWishlistRepository()))
+    ..registerFactory(() => WishlistBloc(wishlistRepository))
     ..registerFactory(() => ThemeBloc(FakeThemeStorage()));
 
   // Network images go through a disk cache that asks the platform for a

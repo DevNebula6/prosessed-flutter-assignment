@@ -12,6 +12,7 @@ import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/product_category.dart';
 import 'package:shopsphere/features/products/domain/entities/product_sort.dart';
 import 'package:shopsphere/features/products/domain/entities/products_page.dart';
+import 'package:shopsphere/features/products/domain/entities/review.dart';
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
 import 'package:shopsphere/features/profile/domain/entities/user_profile.dart';
 import 'package:shopsphere/features/profile/domain/repositories/profile_repository.dart';
@@ -41,6 +42,18 @@ Product testProduct(int id, {int stock = 5}) {
     thumbnail: 'https://cdn.dummyjson.com/$id/thumbnail.webp',
     brand: 'Essence',
     description: 'A popular mascara known for its volumizing effect.',
+    images: [
+      'https://cdn.dummyjson.com/$id/1.webp',
+      'https://cdn.dummyjson.com/$id/2.webp',
+    ],
+    reviews: [
+      Review(
+        rating: 4,
+        comment: 'Very satisfied! It lasted all day without smudging.',
+        date: DateTime(2025, 4, 30),
+        reviewerName: 'Eleanor Collins',
+      ),
+    ],
   );
 }
 

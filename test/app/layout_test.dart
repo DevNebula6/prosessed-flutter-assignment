@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopsphere/app/home_shell.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
+import 'package:shopsphere/features/cart/domain/entities/cart.dart';
 import 'package:shopsphere/features/cart/domain/entities/order.dart';
 import 'package:shopsphere/features/cart/presentation/pages/order_success_page.dart';
 import 'package:shopsphere/features/products/presentation/pages/product_details_page.dart';
@@ -32,7 +33,13 @@ Future<void> _expectAccessible(WidgetTester tester) async {
 }
 
 void main() {
-  setUp(registerFakeDependencies);
+  // Something in the cart and wishlist, so those tabs show their full layout.
+  setUp(
+    () => registerFakeDependencies(
+      cart: const Cart().add(testProduct(1), quantity: 2).add(testProduct(2)),
+      wishlist: [testProduct(3), testProduct(4)],
+    ),
+  );
 
   for (final setup in _setups) {
     Future<void> pump(WidgetTester tester, Widget home) {
