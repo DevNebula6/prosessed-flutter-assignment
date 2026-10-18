@@ -18,4 +18,22 @@ void main() {
     expect(rail.top, 0);
     expect(rail.bottom, 800);
   });
+
+  // Rotating across a breakpoint changes the layout around the tabs. The
+  // shop should keep what the user was doing, not start over.
+  for (final (name, portrait, landscape) in [
+    ('phone', const Size(412, 915), const Size(915, 412)),
+    ('tablet', const Size(800, 1280), const Size(1280, 800)),
+  ]) {
+    testWidgets('rotating a $name keeps the search', (tester) async {
+      await pumpTestApp(tester, const HomeShell(), size: portrait);
+      await tester.enterText(find.byType(TextField), 'phone');
+      await tester.pump(const Duration(milliseconds: 500));
+
+      tester.view.physicalSize = landscape;
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('phone'), findsOneWidget);
+    });
+  }
 }
