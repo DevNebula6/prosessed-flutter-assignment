@@ -55,7 +55,7 @@ class EmptyView extends StatelessWidget {
               ],
               if (actionLabel case final label?) ...[
                 const SizedBox(height: AppSpacing.xl),
-                FilledButton.tonal(onPressed: onAction, child: Text(label)),
+                FilledButton(onPressed: onAction, child: Text(label)),
               ],
             ],
           ),

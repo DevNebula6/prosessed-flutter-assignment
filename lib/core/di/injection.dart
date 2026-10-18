@@ -12,6 +12,13 @@ import '../../features/auth/domain/usecases/login.dart';
 import '../../features/auth/domain/usecases/logout.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/auth/presentation/cubit/login_cubit.dart';
+import '../../features/products/data/datasources/product_remote_data_source.dart';
+import '../../features/products/data/repositories/product_repository_impl.dart';
+import '../../features/products/domain/repositories/product_repository.dart';
+import '../../features/products/domain/usecases/get_categories.dart';
+import '../../features/products/domain/usecases/get_products.dart';
+import '../../features/products/presentation/bloc/products_bloc.dart';
+import '../../features/products/presentation/cubit/categories_cubit.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../storage/token_storage.dart';
@@ -31,6 +38,7 @@ Future<void> initDependencies() async {
     );
 
   _registerAuth();
+  _registerProducts();
 }
 
 void _registerAuth() {
@@ -49,4 +57,16 @@ void _registerAuth() {
     ..registerLazySingleton(() => GetSavedUser(getIt()))
     ..registerFactory(() => AuthCubit(getSavedUser: getIt(), logout: getIt()))
     ..registerFactory(() => LoginCubit(getIt()));
+}
+
+void _registerProducts() {
+  getIt
+    ..registerLazySingleton(() => ProductRemoteDataSource(getIt()))
+    ..registerLazySingleton<ProductRepository>(
+      () => ProductRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton(() => GetProducts(getIt()))
+    ..registerLazySingleton(() => GetCategories(getIt()))
+    ..registerFactory(() => ProductsBloc(getIt()))
+    ..registerFactory(() => CategoriesCubit(getIt()));
 }

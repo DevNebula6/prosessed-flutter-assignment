@@ -14,8 +14,17 @@ import 'package:shopsphere/features/auth/domain/usecases/logout.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
+import 'package:shopsphere/features/products/domain/entities/product_sort.dart';
+import 'package:shopsphere/features/products/domain/entities/products_page.dart';
+import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
+import 'package:shopsphere/features/products/domain/usecases/get_categories.dart';
+import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
+import 'package:shopsphere/features/products/presentation/bloc/products_bloc.dart';
+import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockProductRepository extends Mock implements ProductRepository {}
 
 void main() {
   late MockAuthRepository repository;
@@ -29,9 +38,26 @@ void main() {
     image: 'https://dummyjson.com/icon/emilys/128',
   );
 
+  setUpAll(() => registerFallbackValue(ProductSort.relevance));
+
   setUp(() async {
     await getIt.reset();
     repository = MockAuthRepository();
+
+    // Home opens on the product list, which only needs to load something.
+    final products = MockProductRepository();
+    when(
+      () => products.getProducts(
+        query: any(named: 'query'),
+        category: any(named: 'category'),
+        sort: any(named: 'sort'),
+        skip: any(named: 'skip'),
+      ),
+    ).thenAnswer(
+      (_) async => const Ok(ProductsPage(products: [], skip: 0, total: 0)),
+    );
+    when(() => products.getCategories()).thenAnswer((_) async => const Ok([]));
+
     getIt
       ..registerFactory(
         () => AuthCubit(
@@ -39,7 +65,9 @@ void main() {
           logout: Logout(repository),
         ),
       )
-      ..registerFactory(() => LoginCubit(Login(repository)));
+      ..registerFactory(() => LoginCubit(Login(repository)))
+      ..registerFactory(() => ProductsBloc(GetProducts(products)))
+      ..registerFactory(() => CategoriesCubit(GetCategories(products)));
   });
 
   void stubLogin(String password, Result<User> result) {
