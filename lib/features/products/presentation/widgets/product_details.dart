@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/shimmer_box.dart';
+import '../../../cart/presentation/widgets/add_to_cart_bar.dart';
 import '../../domain/entities/product.dart';
 import '../cubit/product_details_cubit.dart';
 import 'discount_badge.dart';
@@ -75,7 +76,7 @@ class _DetailsContent extends StatelessWidget {
     );
     final info = _ProductInfo(product, isLoading: isLoading);
 
-    return LayoutBuilder(
+    final content = LayoutBuilder(
       builder: (context, constraints) {
         // Image and text side by side when there's room for both.
         if (constraints.maxWidth >= 720) {
@@ -100,6 +101,13 @@ class _DetailsContent extends StatelessWidget {
           ],
         );
       },
+    );
+
+    return Column(
+      children: [
+        Expanded(child: content),
+        AddToCartBar(product: product),
+      ],
     );
   }
 }

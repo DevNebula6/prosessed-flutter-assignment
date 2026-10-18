@@ -14,6 +14,11 @@ import 'package:shopsphere/features/auth/domain/usecases/logout.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
+import 'package:shopsphere/features/cart/domain/entities/cart.dart';
+import 'package:shopsphere/features/cart/domain/repositories/cart_repository.dart';
+import 'package:shopsphere/features/cart/domain/usecases/place_order.dart';
+import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:shopsphere/features/cart/presentation/cubit/checkout_cubit.dart';
 import 'package:shopsphere/features/products/domain/entities/product_sort.dart';
 import 'package:shopsphere/features/products/domain/entities/products_page.dart';
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
@@ -25,6 +30,11 @@ import 'package:shopsphere/features/products/presentation/cubit/categories_cubit
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockProductRepository extends Mock implements ProductRepository {}
+
+class FakeCartRepository extends Fake implements CartRepository {
+  @override
+  Cart loadCart() => const Cart();
+}
 
 void main() {
   late MockAuthRepository repository;
@@ -67,7 +77,9 @@ void main() {
       )
       ..registerFactory(() => LoginCubit(Login(repository)))
       ..registerFactory(() => ProductsBloc(GetProducts(products)))
-      ..registerFactory(() => CategoriesCubit(GetCategories(products)));
+      ..registerFactory(() => CategoriesCubit(GetCategories(products)))
+      ..registerFactory(() => CartCubit(FakeCartRepository()))
+      ..registerFactory(() => CheckoutCubit(PlaceOrder(FakeCartRepository())));
   });
 
   void stubLogin(String password, Result<User> result) {

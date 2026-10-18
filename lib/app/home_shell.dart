@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../core/utils/breakpoints.dart';
+import '../features/cart/presentation/pages/cart_page.dart';
+import '../features/cart/presentation/widgets/cart_icon.dart';
 import '../features/products/presentation/pages/products_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 
@@ -20,13 +22,14 @@ class _HomeShellState extends State<HomeShell> {
   static const _tabs = [
     (
       label: 'Shop',
-      icon: Icons.storefront_outlined,
-      selectedIcon: Icons.storefront,
+      icon: Icon(Icons.storefront_outlined),
+      selectedIcon: Icon(Icons.storefront),
     ),
+    (label: 'Cart', icon: CartIcon(), selectedIcon: CartIcon(selected: true)),
     (
       label: 'Profile',
-      icon: Icons.person_outline_rounded,
-      selectedIcon: Icons.person_rounded,
+      icon: Icon(Icons.person_outline_rounded),
+      selectedIcon: Icon(Icons.person_rounded),
     ),
   ];
 
@@ -39,7 +42,7 @@ class _HomeShellState extends State<HomeShell> {
     // IndexedStack keeps each tab's state, like scroll position, when switching.
     final body = IndexedStack(
       index: _index,
-      children: const [ProductsPage(), ProfilePage()],
+      children: const [ProductsPage(), CartPage(), ProfilePage()],
     );
 
     if (ScreenSize.of(context) == ScreenSize.compact) {
@@ -51,8 +54,8 @@ class _HomeShellState extends State<HomeShell> {
           destinations: [
             for (final tab in _tabs)
               NavigationDestination(
-                icon: Icon(tab.icon),
-                selectedIcon: Icon(tab.selectedIcon),
+                icon: tab.icon,
+                selectedIcon: tab.selectedIcon,
                 label: tab.label,
               ),
           ],
@@ -71,8 +74,8 @@ class _HomeShellState extends State<HomeShell> {
               destinations: [
                 for (final tab in _tabs)
                   NavigationRailDestination(
-                    icon: Icon(tab.icon),
-                    selectedIcon: Icon(tab.selectedIcon),
+                    icon: tab.icon,
+                    selectedIcon: tab.selectedIcon,
                     label: Text(tab.label),
                   ),
               ],
