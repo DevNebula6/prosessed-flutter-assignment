@@ -16,6 +16,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   Future<void> load(int id) async {
     emit(const ProductDetailsLoading());
     final result = await _getProduct(id);
+    if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => ProductDetailsLoaded(value),
       Err(failure: NotFoundFailure()) => const ProductDetailsNotFound(),

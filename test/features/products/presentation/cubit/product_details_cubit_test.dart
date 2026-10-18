@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -75,4 +77,16 @@ void main() {
       const ProductDetailsLoaded(product),
     ],
   );
+
+  test('ignores a product that arrives after the page closed', () async {
+    final response = Completer<Result<Product>>();
+    when(() => getProduct(1)).thenAnswer((_) => response.future);
+    final cubit = ProductDetailsCubit(getProduct);
+
+    final loading = cubit.load(1);
+    await cubit.close();
+    response.complete(const Ok(product));
+
+    await expectLater(loading, completes);
+  });
 }

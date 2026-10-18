@@ -18,6 +18,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
     emit(const CheckoutInProgress());
     final result = await _placeOrder(userId: userId, cart: cart);
+    if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => CheckoutSuccess(value),
       Err(:final failure) => CheckoutError(failure.message),

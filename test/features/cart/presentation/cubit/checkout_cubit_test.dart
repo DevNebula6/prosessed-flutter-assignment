@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -68,4 +70,21 @@ void main() {
     act: (cubit) => cubit.placeOrder(userId: 1, cart: const Cart()),
     expect: () => <CheckoutState>[],
   );
+
+  test('ignores an order that completes after the cart closed', () async {
+    final response = Completer<Result<Order>>();
+    when(
+      () => placeOrder(
+        userId: any(named: 'userId'),
+        cart: any(named: 'cart'),
+      ),
+    ).thenAnswer((_) => response.future);
+    final cubit = CheckoutCubit(placeOrder);
+
+    final placing = cubit.placeOrder(userId: 1, cart: cart);
+    await cubit.close();
+    response.complete(const Ok(order));
+
+    await expectLater(placing, completes);
+  });
 }

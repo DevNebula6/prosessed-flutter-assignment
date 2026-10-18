@@ -20,6 +20,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     emit(const LoginLoading());
     final result = await _login(username: username, password: password);
+    if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => LoginSuccess(value),
       Err(:final failure) => LoginError(failure.message),
