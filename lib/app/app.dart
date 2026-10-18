@@ -39,6 +39,9 @@ class ShopSphereApp extends StatelessWidget {
   }
 
   void _onAuthChanged(BuildContext context, AuthState state) {
+    // The cart belongs to whoever is signed in.
+    if (state is Unauthenticated) context.read<CartCubit>().clear();
+
     final route = switch (state) {
       Authenticated() => HomeShell.route(),
       Unauthenticated() => LoginPage.route(),

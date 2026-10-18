@@ -38,6 +38,9 @@ class MockProductRepository extends Mock implements ProductRepository {}
 class FakeCartRepository extends Fake implements CartRepository {
   @override
   Cart loadCart() => const Cart();
+
+  @override
+  Future<void> saveCart(Cart cart) async {}
 }
 
 void main() {

@@ -24,6 +24,29 @@ class ProfilePage extends StatelessWidget {
 class _ProfileView extends StatelessWidget {
   const _ProfileView();
 
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign out?'),
+        content: const Text('Your cart on this device will be cleared.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Sign out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await context.read<AuthCubit>().logout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // The user saved at sign-in fills the header straight away, even offline;
@@ -73,7 +96,7 @@ class _ProfileView extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 OutlinedButton.icon(
-                  onPressed: () => context.read<AuthCubit>().logout(),
+                  onPressed: () => _confirmSignOut(context),
                   icon: const Icon(Icons.logout_rounded),
                   label: const Text('Sign out'),
                 ),
