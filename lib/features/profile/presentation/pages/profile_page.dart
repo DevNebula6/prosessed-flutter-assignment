@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/theme_bloc.dart';
 import '../../../../core/widgets/shimmer_box.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../domain/entities/user_profile.dart';
@@ -96,6 +97,8 @@ class _ProfileView extends StatelessWidget {
                     ),
                   },
                 ),
+                const SizedBox(height: AppSpacing.lg),
+                const _AppearanceCard(),
                 const SizedBox(height: AppSpacing.xl),
                 OutlinedButton.icon(
                   onPressed: () => _confirmSignOut(context),
@@ -105,6 +108,42 @@ class _ProfileView extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppearanceCard extends StatelessWidget {
+  const _AppearanceCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final themeMode = context.watch<ThemeBloc>().state;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Appearance', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: AppSpacing.md),
+            SegmentedButton<ThemeMode>(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(value: ThemeMode.system, label: Text('System')),
+                ButtonSegment(value: ThemeMode.light, label: Text('Light')),
+                ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+              ],
+              selected: {themeMode},
+              onSelectionChanged: (selection) {
+                context.read<ThemeBloc>().add(
+                  ThemeModeChanged(selection.single),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

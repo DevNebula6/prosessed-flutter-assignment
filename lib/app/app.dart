@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/di/injection.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/theme_bloc.dart';
 import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/splash_page.dart';
@@ -21,22 +22,26 @@ class ShopSphereApp extends StatelessWidget {
         BlocProvider(create: (_) => getIt<AuthCubit>()..checkSession()),
         BlocProvider(create: (_) => getIt<CartCubit>()),
         BlocProvider(create: (_) => getIt<WishlistBloc>()),
+        BlocProvider(create: (_) => getIt<ThemeBloc>()),
       ],
-      child: MaterialApp(
-        title: 'ShopSphere',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        navigatorKey: navigatorKey,
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        builder: (context, child) => BlocListener<AuthCubit, AuthState>(
-          listenWhen: (previous, current) {
-            return previous.runtimeType != current.runtimeType;
-          },
-          listener: _onAuthChanged,
-          child: child,
+      child: BlocBuilder<ThemeBloc, ThemeMode>(
+        builder: (context, themeMode) => MaterialApp(
+          title: 'ShopSphere',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: themeMode,
+          navigatorKey: navigatorKey,
+          scaffoldMessengerKey: scaffoldMessengerKey,
+          builder: (context, child) => BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) {
+              return previous.runtimeType != current.runtimeType;
+            },
+            listener: _onAuthChanged,
+            child: child,
+          ),
+          home: const SplashPage(),
         ),
-        home: const SplashPage(),
       ),
     );
   }
