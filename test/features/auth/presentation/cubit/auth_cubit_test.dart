@@ -29,7 +29,11 @@ void main() {
   });
 
   AuthCubit buildCubit() {
-    return AuthCubit(getSavedUser: getSavedUser, logout: logout);
+    return AuthCubit(
+      getSavedUser: getSavedUser,
+      logout: logout,
+      sessionExpired: const Stream.empty(),
+    );
   }
 
   test('starts in AuthInitial', () {

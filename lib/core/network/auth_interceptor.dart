@@ -2,16 +2,23 @@ import 'package:dio/dio.dart';
 
 import '../storage/token_storage.dart';
 import 'api_endpoints.dart';
+import 'session_events.dart';
 
 /// Adds the access token to requests. When the server says it has expired
 /// (401), gets a new one with the refresh token and retries the request once.
 ///
 /// As a [QueuedInterceptor] it handles one error at a time, so requests that
-/// fail together lead to a single refresh.
+/// fail together lead to a single refresh. If the refresh token is rejected
+/// too, the session is cleared and [SessionEvents] is told.
 class AuthInterceptor extends QueuedInterceptor {
-  AuthInterceptor({required this._tokenStorage, required this._plainClient});
+  AuthInterceptor({
+    required this._tokenStorage,
+    required this._plainClient,
+    required this._sessionEvents,
+  });
 
   final TokenStorage _tokenStorage;
+  final SessionEvents _sessionEvents;
 
   /// A client without this interceptor, for the refresh call and the retry.
   /// Retrying through the intercepted client could deadlock the error queue.
@@ -56,6 +63,7 @@ class AuthInterceptor extends QueuedInterceptor {
 
     if (token == null) {
       await _tokenStorage.clear();
+      _sessionEvents.notifyExpired();
       handler.next(err);
       return;
     }

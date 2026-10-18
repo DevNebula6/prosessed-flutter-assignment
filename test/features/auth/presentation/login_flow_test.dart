@@ -80,6 +80,7 @@ void main() {
         () => AuthCubit(
           getSavedUser: GetSavedUser(repository),
           logout: Logout(repository),
+          sessionExpired: const Stream.empty(),
         ),
       )
       ..registerFactory(() => LoginCubit(Login(repository)))
