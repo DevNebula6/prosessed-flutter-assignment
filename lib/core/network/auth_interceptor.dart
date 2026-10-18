@@ -55,9 +55,11 @@ class AuthInterceptor extends QueuedInterceptor {
     final String? token;
     try {
       token = await _freshAccessToken(request);
-    } on DioException {
-      // The refresh call itself didn't get through, e.g. no connection.
-      handler.next(err);
+    } on DioException catch (refreshError) {
+      // The refresh call itself didn't get through, e.g. no connection. Keep
+      // the session and pass that on rather than the 401, so the user sees
+      // why instead of being told their session expired.
+      handler.next(refreshError);
       return;
     }
 

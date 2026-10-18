@@ -149,7 +149,18 @@ void main() {
         ),
       );
 
-    await expectLater(dio.get<void>('/auth/me'), throwsA(isA<DioException>()));
+    // The caller should hear about the connection, not the expired token, or
+    // the user is told their session ended while it didn't.
+    await expectLater(
+      dio.get<void>('/auth/me'),
+      throwsA(
+        isA<DioException>().having(
+          (error) => error.type,
+          'type',
+          DioExceptionType.connectionError,
+        ),
+      ),
+    );
     verifyNever(() => tokens.clear());
   });
 }
