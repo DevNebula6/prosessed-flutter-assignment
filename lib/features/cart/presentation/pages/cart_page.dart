@@ -24,7 +24,10 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<CheckoutCubit>(),
-      child: const _CartView(),
+      // On the Cart tab this Scaffold sits inside the home one, and snackbars
+      // only show in the outermost Scaffold of a messenger, on top of the
+      // checkout panel. Its own messenger keeps them inside this Scaffold.
+      child: const ScaffoldMessenger(child: _CartView()),
     );
   }
 }
