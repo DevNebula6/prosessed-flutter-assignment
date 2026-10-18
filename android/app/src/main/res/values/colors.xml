@@ -2,4 +2,5 @@
 <resources>
     <!-- Matches the app's light surface so launch fades straight into the splash page. -->
     <color name="launch_background">#F5FBF5</color>
+    <color name="ic_launcher_background">#059669</color>
 </resources>
