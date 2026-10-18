@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import 'api_endpoints.dart';
 
-Dio createDio({List<Interceptor> interceptors = const []}) {
+Dio createDio() {
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiEndpoints.baseUrl,
@@ -13,7 +13,6 @@ Dio createDio({List<Interceptor> interceptors = const []}) {
     ),
   );
 
-  dio.interceptors.addAll(interceptors);
   if (kDebugMode) {
     dio.interceptors.add(
       LogInterceptor(

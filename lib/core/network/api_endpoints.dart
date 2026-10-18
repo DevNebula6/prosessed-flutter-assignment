@@ -1,6 +1,13 @@
 abstract final class ApiEndpoints {
   static const baseUrl = 'https://dummyjson.com';
 
+  /// How long an access token lasts. Lower it with
+  /// `--dart-define=TOKEN_LIFETIME_MINUTES=1` to see the refresh in action.
+  static const tokenLifetimeMinutes = int.fromEnvironment(
+    'TOKEN_LIFETIME_MINUTES',
+    defaultValue: 30,
+  );
+
   static const login = '/auth/login';
   static const refresh = '/auth/refresh';
   static const me = '/auth/me';

@@ -48,7 +48,12 @@ Future<void> initDependencies() async {
     ..registerSingleton(prefs)
     ..registerLazySingleton(() => TokenStorage(const FlutterSecureStorage()))
     ..registerLazySingleton<Dio>(
-      () => createDio(interceptors: [AuthInterceptor(getIt())]),
+      // Inserted first so the debug log shows the Authorization header.
+      () => createDio()
+        ..interceptors.insert(
+          0,
+          AuthInterceptor(tokenStorage: getIt(), plainClient: createDio()),
+        ),
     );
 
   _registerAuth();
