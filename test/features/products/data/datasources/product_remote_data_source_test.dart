@@ -111,4 +111,18 @@ void main() {
     expect(page.total, 194);
     expect(page.products, hasLength(2));
   });
+
+  test('fetches a single product with all its fields', () async {
+    when(() => dio.get<Map<String, dynamic>>('/products/1')).thenAnswer(
+      (_) async => Response(
+        requestOptions: RequestOptions(),
+        data: fixture('product.json') as Map<String, dynamic>,
+      ),
+    );
+
+    final product = await dataSource.getProduct(1);
+
+    expect(product.id, 1);
+    expect(product.reviews, hasLength(3));
+  });
 }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
+import '../../domain/entities/product.dart';
 import '../bloc/products_bloc.dart';
 import 'product_card.dart';
 import 'product_card_skeleton.dart';
@@ -18,7 +19,16 @@ const productGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
 
 /// The product list as slivers, for use inside a [CustomScrollView].
 class ProductGrid extends StatelessWidget {
-  const ProductGrid({super.key});
+  const ProductGrid({
+    super.key,
+    required this.onProductTap,
+    this.selectedProductId,
+  });
+
+  final ValueChanged<Product> onProductTap;
+
+  /// Highlighted while its details are shown next to the grid.
+  final int? selectedProductId;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +68,12 @@ class ProductGrid extends StatelessWidget {
                 gridDelegate: productGridDelegate,
                 itemCount: state.products.length,
                 itemBuilder: (context, index) {
-                  return ProductCard(product: state.products[index]);
+                  final product = state.products[index];
+                  return ProductCard(
+                    product: product,
+                    selected: product.id == selectedProductId,
+                    onTap: () => onProductTap(product),
+                  );
                 },
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../domain/entities/product_sort.dart';
 import '../models/product_category_model.dart';
+import '../models/product_model.dart';
 import '../models/products_page_model.dart';
 
 class ProductRemoteDataSource {
@@ -32,6 +33,13 @@ class ProductRemoteDataSource {
       },
     );
     return ProductsPageModel.fromJson(response.data!);
+  }
+
+  Future<ProductModel> getProduct(int id) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      ApiEndpoints.product(id),
+    );
+    return ProductModel.fromJson(response.data!);
   }
 
   Future<List<ProductCategoryModel>> getCategories() async {

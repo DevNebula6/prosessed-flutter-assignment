@@ -7,11 +7,21 @@ import 'discount_badge.dart';
 import 'price_label.dart';
 import 'rating_label.dart';
 
+/// Shared by the card thumbnail and the first details image so the image
+/// flies between the two screens.
+String productImageHeroTag(int productId) => 'product-image-$productId';
+
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product, this.onTap});
+  const ProductCard({
+    super.key,
+    required this.product,
+    this.onTap,
+    this.selected = false,
+  });
 
   final Product product;
   final VoidCallback? onTap;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +33,12 @@ class ProductCard extends StatelessWidget {
 
     return MergeSemantics(
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          side: selected
+              ? BorderSide(color: theme.colorScheme.primary, width: 2)
+              : BorderSide.none,
+        ),
         child: InkWell(
           onTap: onTap,
           child: Column(
@@ -36,9 +52,12 @@ class ProductCard extends StatelessWidget {
                       color: theme.colorScheme.surfaceContainerLowest,
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.sm),
-                        child: AppNetworkImage(
-                          product.thumbnail,
-                          fit: BoxFit.contain,
+                        child: Hero(
+                          tag: productImageHeroTag(product.id),
+                          child: AppNetworkImage(
+                            product.thumbnail,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
