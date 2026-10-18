@@ -33,6 +33,10 @@ import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/get_profile.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/wishlist/data/datasources/wishlist_local_data_source.dart';
+import '../../features/wishlist/data/repositories/wishlist_repository_impl.dart';
+import '../../features/wishlist/domain/repositories/wishlist_repository.dart';
+import '../../features/wishlist/presentation/bloc/wishlist_bloc.dart';
 import '../network/auth_interceptor.dart';
 import '../network/dio_client.dart';
 import '../network/session_events.dart';
@@ -66,6 +70,7 @@ Future<void> initDependencies() async {
   _registerProducts();
   _registerCart();
   _registerProfile();
+  _registerWishlist();
 }
 
 void _registerAuth() {
@@ -126,4 +131,13 @@ void _registerProfile() {
     )
     ..registerLazySingleton(() => GetProfile(getIt()))
     ..registerFactory(() => ProfileCubit(getIt()));
+}
+
+void _registerWishlist() {
+  getIt
+    ..registerLazySingleton(() => WishlistLocalDataSource(getIt()))
+    ..registerLazySingleton<WishlistRepository>(
+      () => WishlistRepositoryImpl(getIt()),
+    )
+    ..registerFactory(() => WishlistBloc(getIt()));
 }

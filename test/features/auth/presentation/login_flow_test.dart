@@ -19,6 +19,7 @@ import 'package:shopsphere/features/cart/domain/repositories/cart_repository.dar
 import 'package:shopsphere/features/cart/domain/usecases/place_order.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/checkout_cubit.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/product_sort.dart';
 import 'package:shopsphere/features/products/domain/entities/products_page.dart';
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
@@ -30,6 +31,8 @@ import 'package:shopsphere/features/profile/domain/entities/user_profile.dart';
 import 'package:shopsphere/features/profile/domain/repositories/profile_repository.dart';
 import 'package:shopsphere/features/profile/domain/usecases/get_profile.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:shopsphere/features/wishlist/domain/repositories/wishlist_repository.dart';
+import 'package:shopsphere/features/wishlist/presentation/bloc/wishlist_bloc.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -88,9 +91,8 @@ void main() {
       ..registerFactory(() => CategoriesCubit(GetCategories(products)))
       ..registerFactory(() => CartCubit(FakeCartRepository()))
       ..registerFactory(() => CheckoutCubit(PlaceOrder(FakeCartRepository())))
-      ..registerFactory(
-        () => ProfileCubit(GetProfile(FakeProfileRepository())),
-      );
+      ..registerFactory(() => ProfileCubit(GetProfile(FakeProfileRepository())))
+      ..registerFactory(() => WishlistBloc(FakeWishlistRepository()));
   });
 
   void stubLogin(String password, Result<User> result) {
@@ -141,4 +143,12 @@ void main() {
 class FakeProfileRepository extends Fake implements ProfileRepository {
   @override
   Future<Result<UserProfile>> getProfile() async => const Err(NetworkFailure());
+}
+
+class FakeWishlistRepository extends Fake implements WishlistRepository {
+  @override
+  List<Product> loadWishlist() => const [];
+
+  @override
+  Future<void> saveWishlist(List<Product> products) async {}
 }

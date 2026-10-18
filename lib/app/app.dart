@@ -7,6 +7,7 @@ import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/splash_page.dart';
 import '../features/cart/presentation/cubit/cart_cubit.dart';
+import '../features/wishlist/presentation/bloc/wishlist_bloc.dart';
 import 'home_shell.dart';
 import 'navigation.dart';
 
@@ -19,6 +20,7 @@ class ShopSphereApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => getIt<AuthCubit>()..checkSession()),
         BlocProvider(create: (_) => getIt<CartCubit>()),
+        BlocProvider(create: (_) => getIt<WishlistBloc>()),
       ],
       child: MaterialApp(
         title: 'ShopSphere',
@@ -40,8 +42,11 @@ class ShopSphereApp extends StatelessWidget {
   }
 
   void _onAuthChanged(BuildContext context, AuthState state) {
-    // The cart belongs to whoever is signed in.
-    if (state is Unauthenticated) context.read<CartCubit>().clear();
+    // The cart and wishlist belong to whoever is signed in.
+    if (state is Unauthenticated) {
+      context.read<CartCubit>().clear();
+      context.read<WishlistBloc>().add(const WishlistCleared());
+    }
 
     final route = switch (state) {
       Authenticated() => HomeShell.route(),

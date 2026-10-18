@@ -7,6 +7,7 @@ import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/shimmer_box.dart';
 import '../../../cart/presentation/widgets/add_to_cart_bar.dart';
+import '../../../wishlist/presentation/widgets/wishlist_button.dart';
 import '../../domain/entities/product.dart';
 import '../cubit/product_details_cubit.dart';
 import 'discount_badge.dart';
@@ -133,7 +134,13 @@ class _ProductInfo extends StatelessWidget {
             style: text.labelLarge?.copyWith(color: theme.colorScheme.primary),
           ),
         const SizedBox(height: AppSpacing.xs),
-        Text(product.title, style: text.headlineSmall),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: Text(product.title, style: text.headlineSmall)),
+            WishlistButton(product: product),
+          ],
+        ),
         const SizedBox(height: AppSpacing.sm),
         RatingLabel(product.rating),
         const SizedBox(height: AppSpacing.lg),

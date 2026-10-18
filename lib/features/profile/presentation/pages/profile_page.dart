@@ -29,7 +29,9 @@ class _ProfileView extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Sign out?'),
-        content: const Text('Your cart on this device will be cleared.'),
+        content: const Text(
+          'Your cart and wishlist on this device will be cleared.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

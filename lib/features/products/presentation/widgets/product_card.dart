@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_network_image.dart';
+import '../../../wishlist/presentation/widgets/wishlist_button.dart';
 import '../../domain/entities/product.dart';
 import 'discount_badge.dart';
 import 'price_label.dart';
@@ -31,69 +32,80 @@ class ProductCard extends StatelessWidget {
     final titleHeight = MediaQuery.textScalerOf(context)
         .scale(titleStyle.fontSize! * titleStyle.height! * 2);
 
-    return MergeSemantics(
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          side: selected
-              ? BorderSide(color: theme.colorScheme.primary, width: 2)
-              : BorderSide.none,
-        ),
-        child: InkWell(
-          onTap: onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ColoredBox(
-                      color: theme.colorScheme.surfaceContainerLowest,
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        child: Hero(
-                          tag: productImageHeroTag(product.id),
-                          child: AppNetworkImage(
-                            product.thumbnail,
-                            fit: BoxFit.contain,
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        side: selected
+            ? BorderSide(color: theme.colorScheme.primary, width: 2)
+            : BorderSide.none,
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Read out as one item; the heart below stays its own button.
+          MergeSemantics(
+            child: InkWell(
+              onTap: onTap,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ColoredBox(
+                          color: theme.colorScheme.surfaceContainerLowest,
+                          child: Padding(
+                            padding: const EdgeInsets.all(AppSpacing.sm),
+                            child: Hero(
+                              tag: productImageHeroTag(product.id),
+                              child: AppNetworkImage(
+                                product.thumbnail,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        if (product.discountPercentage >= 1)
+                          Positioned(
+                            top: AppSpacing.sm,
+                            left: AppSpacing.sm,
+                            child: DiscountBadge(product.discountPercentage),
+                          ),
+                      ],
                     ),
-                    if (product.discountPercentage >= 1)
-                      Positioned(
-                        top: AppSpacing.sm,
-                        left: AppSpacing.sm,
-                        child: DiscountBadge(product.discountPercentage),
-                      ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: titleHeight,
-                      child: Text(
-                        product.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: titleStyle,
-                      ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: titleHeight,
+                          child: Text(
+                            product.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: titleStyle,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        PriceLabel(product),
+                        const SizedBox(height: AppSpacing.xs),
+                        RatingLabel(product.rating),
+                      ],
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    PriceLabel(product),
-                    const SizedBox(height: AppSpacing.xs),
-                    RatingLabel(product.rating),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: AppSpacing.xs,
+            right: AppSpacing.xs,
+            child: WishlistButton(product: product, onImage: true),
+          ),
+        ],
       ),
     );
   }

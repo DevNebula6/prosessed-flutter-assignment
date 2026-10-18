@@ -6,6 +6,7 @@ abstract final class AppColors {
   // Fixed accents that read well on both light and dark surfaces.
   static const discount = Color(0xFFC2410C);
   static const rating = Color(0xFFF59E0B);
+  static const favorite = Color(0xFFE11D48);
 
   /// Amber for "only a few left", dark enough for text in either theme.
   static Color lowStock(Brightness brightness) {
