@@ -95,9 +95,11 @@ class _ProductsViewState extends State<_ProductsView> {
       ),
     );
 
+    // A failed refresh, with products still on screen. A failed next page
+    // shows in the list footer instead.
     return BlocListener<ProductsBloc, ProductsState>(
       listenWhen: (previous, current) {
-        return previous.failure == null &&
+        return previous.status == ProductsStatus.loading &&
             current.failure != null &&
             current.products.isNotEmpty;
       },

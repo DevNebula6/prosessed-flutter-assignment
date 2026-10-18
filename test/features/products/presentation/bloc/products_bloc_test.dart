@@ -321,7 +321,7 @@ void main() {
     );
 
     blocTest<ProductsBloc, ProductsState>(
-      'keeps the products and reports the failure when refresh fails',
+      'keeps the products and reports the failure once when refresh fails',
       setUp: () => whenGetProducts().thenAnswer(
         (_) async => const Err(NetworkFailure()),
       ),
@@ -330,12 +330,15 @@ void main() {
           ProductsState(status: ProductsStatus.success, products: firstPage),
       act: (bloc) => bloc.add(const ProductsRefreshed()),
       skip: 1,
+      // Reported for the snackbar, then cleared, so the list footer doesn't
+      // offer to load more as if the next page had failed.
       expect: () => [
         ProductsState(
           status: ProductsStatus.success,
           products: firstPage,
           failure: const NetworkFailure(),
         ),
+        ProductsState(status: ProductsStatus.success, products: firstPage),
       ],
     );
   });

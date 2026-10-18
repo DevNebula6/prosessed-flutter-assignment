@@ -20,8 +20,9 @@ final class ProductsState extends Equatable {
   final String? category;
   final ProductSort sort;
 
-  /// Why the latest request failed. When a refresh or the next page fails,
-  /// this is set next to the products that are already on screen.
+  /// Why the latest request failed. When the next page fails, this is set
+  /// next to the products already on screen; a failed refresh sets it only
+  /// for one state, to show a snackbar.
   final Failure? failure;
 
   ProductsState copyWith({
